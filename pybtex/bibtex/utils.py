@@ -20,6 +20,7 @@
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import re
+import sys
 
 from pybtex.bibtex.exceptions import BibTeXError
 
@@ -362,7 +363,52 @@ def split_name_list(string):
     >>> split_name_list('What a Strange and{ }Bizzare Name! and Peterson')
     ['What a Strange and{ }Bizzare Name!', 'Peterson']
     """
-    return split_tex_string(string, ' and ')
+    # if string.find(' and ') > 0:
+    #     return split_tex_string(string, ' and ')
+    # else:
+    #     # CF:
+    #     parts = split_tex_string(string, ', ')
+    #     if parts[0].find(" ") > 0:
+    #         # it's Christian Fritz, Sheila McIlraith
+    #         return parts
+    #     else:
+    #         # it's Fritz, C., McIlraith, M.
+    #         newparts = []
+    #         for i in range(0,len(parts)-1,2):
+    #             newparts.append(parts[i] + ", " + parts[i+1])
+    #         return newparts
+    return split_name_list_rec(string)
+
+def split_name_list_rec(string):
+    """
+    CF: split recursively
+    """
+    if string.startswith("{") and string.endswith("}"):
+        return [string];
+
+    if string.find(' and ') >= 0:
+        parts = split_tex_string(string, ' and ')
+        rtv = []
+        for part in parts:
+            rtv = rtv+split_name_list_rec(part)
+        return rtv
+    elif string.find(',') >= 0:
+        parts = split_tex_string(string, ',')
+#        print >> sys.stderr, parts
+        rtv = []
+        parts.reverse()
+        while parts:
+            part = parts.pop()            
+            #if part.strip().find(' ') < 0:
+            if parts and (parts[0].strip().endswith(".") or parts[0].find(" ") < 0):
+                # assuming its "Last, F." or "Last, First"
+                rtv.append(parts.pop() + " " + part)
+            else:
+                # First1 Last1, First2 Last2 notation
+                rtv.append(part)
+        return rtv
+    else:
+        return [string]
 
 
 def split_tex_string(string, sep=None, strip=True, filter_empty=False):
