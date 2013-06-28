@@ -323,7 +323,10 @@ class Parser(BaseParser):
             self.unnamed_entry_counter += 1
 
         for field_name, field_value_list in fields:
-            field_value = textutils.normalize_whitespace(self.flatten_value_list(field_value_list))
+            if field_name != "bibtex":
+                field_value = textutils.normalize_whitespace(self.flatten_value_list(field_value_list))
+            else:
+                field_value = self.flatten_value_list(field_value_list)
             if field_name in self.person_fields:
                 for name in split_name_list(field_value):
                     entry.add_person(Person(name), field_name)
@@ -356,6 +359,10 @@ class Parser(BaseParser):
             macros=self.macros,
         )
         for entry in entry_iterator:
+            # print entry
+            # cf: include the original bibtex as a field (used downstream)
+            (type, (key, fields)) = entry
+            fields += [("bibtex", self.reproduceBibtex(entry))] 
             entry_type = entry[0]
             if entry_type == 'string':
                 pass
@@ -364,3 +371,18 @@ class Parser(BaseParser):
             else:
                 self.process_entry(entry_type, *entry[1])
         return self.data
+
+    # cf: reproduce the original bibtex entry
+    def reproduceBibtex(self, entry):
+        (type, (key, fields)) = entry
+        rtv = "@" + type + "{ " + key
+        for field in fields:
+            (key, values) = field
+            rtv += ",\n  " + key + " = {"
+            for v in values:
+                # there should only be one
+                rtv += v
+            rtv += "}"
+        rtv += "\n}"
+        return rtv
+        
