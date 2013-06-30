@@ -323,7 +323,7 @@ class Parser(BaseParser):
             self.unnamed_entry_counter += 1
 
         for field_name, field_value_list in fields:
-            if field_name != "bibtex":
+            if field_name != "bibtex" and field_name != "id":
                 field_value = textutils.normalize_whitespace(self.flatten_value_list(field_value_list))
             else:
                 field_value = self.flatten_value_list(field_value_list)
@@ -363,6 +363,8 @@ class Parser(BaseParser):
             # cf: include the original bibtex as a field (used downstream)
             (type, (key, fields)) = entry
             fields += [("bibtex", self.reproduceBibtex(entry))] 
+            # also preserve the original key as id
+            fields += [("id", key)]
             entry_type = entry[0]
             if entry_type == 'string':
                 pass
