@@ -374,6 +374,34 @@ class Parser(BaseParser):
                 self.process_entry(entry_type, *entry[1])
         return self.data
 
+    def parse_string(self, text):
+        self.unnamed_entry_counter = 1
+        self.command_start = 0
+
+        entry_iterator = BibTeXEntryIterator(
+            text,
+            keyless_entries=self.keyless_entries,
+            handle_error=self.handle_error,
+            want_entry=self.data.want_entry,
+            filename=self.filename,
+            macros=self.macros,
+        )
+        for entry in entry_iterator:
+            # print entry
+            # cf: include the original bibtex as a field (used downstream)
+            (type, (key, fields)) = entry
+            fields += [("bibtex", self.reproduceBibtex(entry))] 
+            # also preserve the original key as id
+            fields += [("id", key)]
+            entry_type = entry[0]
+            if entry_type == 'string':
+                pass
+            elif entry_type == 'preamble':
+                self.process_preamble(*entry[1])
+            else:
+                self.process_entry(entry_type, *entry[1])
+        return self.data
+
     # cf: reproduce the original bibtex entry
     def reproduceBibtex(self, entry):
         (type, (key, fields)) = entry
