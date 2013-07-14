@@ -365,6 +365,7 @@ class Parser(BaseParser):
             fields += [("bibtex", self.reproduceBibtex(entry))] 
             # also preserve the original key as id
             fields += [("id", key)]
+            fields += [("bibtype", type)]
             entry_type = entry[0]
             if entry_type == 'string':
                 pass
@@ -374,6 +375,7 @@ class Parser(BaseParser):
                 self.process_entry(entry_type, *entry[1])
         return self.data
 
+    # cf: todo: replicated code from the above; consolidate
     def parse_string(self, text):
         self.unnamed_entry_counter = 1
         self.command_start = 0
@@ -393,6 +395,7 @@ class Parser(BaseParser):
             fields += [("bibtex", self.reproduceBibtex(entry))] 
             # also preserve the original key as id
             fields += [("id", key)]
+            fields += [("bibtype", type)]
             entry_type = entry[0]
             if entry_type == 'string':
                 pass
