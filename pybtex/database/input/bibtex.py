@@ -410,12 +410,15 @@ class Parser(BaseParser):
         (type, (key, fields)) = entry
         rtv = "@" + type + "{ " + key
         for field in fields:
-            (key, values) = field
-            rtv += ",\n  " + key + " = {"
-            for v in values:
-                # there should only be one
-                rtv += v
-            rtv += "}"
+            if len(field) == 2:
+                (key, values) = field
+                rtv += ",\n  " + key + " = {"
+                for v in values:
+                    # there should only be one
+                    rtv += v
+                rtv += "}"
+#            else:
+#                rtv += str(field)
         rtv += "\n}"
         return rtv
         
