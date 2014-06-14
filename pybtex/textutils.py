@@ -51,7 +51,8 @@ def abbreviate(s):
         length = 0
         for letter in s:
             length += 1
-            if not letter.isalpha():
+            # if not letter.isalpha():
+            if not (letter.isalpha() or letter == '.'): #CF
                 yield s[start:length], letter
                 start += length
                 length = 0

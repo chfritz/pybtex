@@ -51,6 +51,6 @@ class NameStyle(BaseNameStyle):
             name_part(tie=True) [person.prelast()],
             name_part [person.last()],
             name_part(before=', ') [person.lineage()],
-            name_part(before=', ') [person.first(abbr) + person.middle(abbr)],
+           name_part(before=', ') [person.first(abbr) + person.middle(abbr)],
         ]
 
