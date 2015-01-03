@@ -62,7 +62,8 @@ def abbreviate(s):
             if is_terminated(part[1]):
                 return part[0][0].upper() + part[1]
             else:
-                return part[0][0].upper() + '.'
+                # cf: don't put a period behind single initials:
+                return part[0][0].upper() + ('.' if len(part[0]) > 1 else '') 
         else:
             return part[1]
     return ''.join(abbr(part) for part in parts(s))
